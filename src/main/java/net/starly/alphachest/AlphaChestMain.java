@@ -1,11 +1,19 @@
-package net.starly.boilerplate;
+package net.starly.alphachest;
 
-import net.starly.core.bstats.Metrics;
+import net.starly.alphachest.command.AlphaChestCmd;
+import net.starly.alphachest.listener.InventoryListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class BoilerPlateMain extends JavaPlugin {
-    private static BoilerPlateMain instance;
+import java.io.File;
+
+public class AlphaChestMain extends JavaPlugin {
+
+    private static AlphaChestMain instance;
+    public static AlphaChestMain getInstance() {
+        return instance;
+    }
+
 
     @Override
     public void onEnable() {
@@ -21,23 +29,19 @@ public class BoilerPlateMain extends JavaPlugin {
         /* SETUP
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
         instance = this;
-        new Metrics(this, 12345); // TODO: 수정
+//        new Metrics(this, 12345); // TODO: 수정
 
         /* CONFIG
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
+        if (!new File(getDataFolder(), "data/").exists()) saveResource("data/", true);
 
         /* COMMAND
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
+        getServer().getPluginCommand("가상창고").setExecutor(new AlphaChestCmd());
 
         /* LISTENER
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        // TODO: 수정
-    }
-
-    public static BoilerPlateMain getInstance() {
-        return instance;
+        getServer().getPluginManager().registerEvents(new InventoryListener(), instance);
     }
 
     private boolean isPluginEnabled(String name) {
