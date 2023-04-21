@@ -43,7 +43,6 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
                     UUID uniqueId = UUID.fromString(playerFile.getName().replace(".yml", ""));
 
                     ConfigurationSection section = playerConfig.getConfigurationSection(slotStr);
-                    System.out.println(section.getKeys(false));
 
                     alphaChestMap.put(uniqueId, new AlphaChestImpl());
                     setUsable(uniqueId, slot, section.getBoolean("usable"));
