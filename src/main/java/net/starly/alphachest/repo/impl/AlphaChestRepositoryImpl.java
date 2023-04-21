@@ -3,13 +3,16 @@ package net.starly.alphachest.repo.impl;
 import net.starly.alphachest.AlphaChestMain;
 import net.starly.alphachest.alphachest.AlphaChest;
 import net.starly.alphachest.alphachest.impl.AlphaChestImpl;
+import net.starly.alphachest.inventory.holder.AlphaChestInventoryHolder;
 import net.starly.alphachest.repo.AlphaChestRepository;
+import net.starly.alphachest.util.EncodeUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 
+import javax.xml.bind.SchemaOutputResolver;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,22 +29,25 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
 
     @Override
-    public void initializing(File playersFolder) {
+    public void initialize(File playersFolder) {
+        this.alphaChestMap.clear();
         this.playersFolder = playersFolder;
 
         if (!playersFolder.exists()) playersFolder.mkdirs();
         else {
-            for (File playerFile : Objects.requireNonNull(playersFolder.listFiles())) {
+            for (File playerFile : playersFolder.listFiles()) {
                 FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
                 playerConfig.getKeys(false).forEach(slotStr -> {
                     int slot = Integer.parseInt(slotStr);
-                    UUID uniqueId = UUID.fromString(playerConfig.getName().replace(".yml", ""));
+                    UUID uniqueId = UUID.fromString(playerFile.getName().replace(".yml", ""));
 
                     ConfigurationSection section = playerConfig.getConfigurationSection(slotStr);
+                    System.out.println(section.getKeys(false));
 
-                    registerPlayerAlphaChest(uniqueId, new AlphaChestImpl());
-                    getPlayerAlphaChest(uniqueId).setSlotInventory(slot, section.getBoolean("usable") ? (Inventory) section.get("inventory") : null);
+                    alphaChestMap.put(uniqueId, new AlphaChestImpl());
+                    setUsable(uniqueId, slot, section.getBoolean("usable"));
+                    getPlayerAlphaChest(uniqueId).setSlotInventory(slot, EncodeUtil.decode((byte[]) section.get("inventory")));
                 });
             }
         }
@@ -49,12 +55,8 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
     @Override
     public AlphaChest getPlayerAlphaChest(UUID uniqueId) {
+        if (!alphaChestMap.containsKey(uniqueId)) registerPlayerAlphaChest(uniqueId, new AlphaChestImpl());
         return alphaChestMap.get(uniqueId);
-    }
-
-    @Override
-    public AlphaChest getPlayerAlphaChest(OfflinePlayer offlinePlayer) {
-        return getPlayerAlphaChest(offlinePlayer.getUniqueId());
     }
 
     @Override
@@ -69,7 +71,7 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
         if (!usable) {
             alphaChest.setSlotInventory(slot, null);
         } else {
-            Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(null, 54, "가상창고 [" + slot + "번]");
+            Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(new AlphaChestInventoryHolder(uniqueId, slot), 54, "가상창고 [" + slot + "번]");
             alphaChest.setSlotInventory(slot, inventory);
         }
     }
@@ -91,8 +93,8 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
             for (int slot = 1; slot <= MAX_SLOT; slot++) {
                 ConfigurationSection section = config.createSection(String.valueOf(slot));
-                section.set("inventory", alphaChest.getSlotInventory(slot));
-                section.set("usable", alphaChest.getSlotInventory(slot) != null);
+                section.set("inventory", EncodeUtil.encode(alphaChest.getSlotInventory(slot)));
+                section.set("usable", isUsable(uniqueId, slot));
             }
 
             try {

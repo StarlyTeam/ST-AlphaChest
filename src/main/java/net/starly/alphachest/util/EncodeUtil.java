@@ -16,6 +16,8 @@ import java.util.Map;
 public class EncodeUtil {
 
     public static byte[] encode(Inventory inventory) {
+        if (inventory == null) return null;
+
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); BukkitObjectOutputStream boos = new BukkitObjectOutputStream(bos)) {
             Map<String, Object> result = new HashMap<>();
 
@@ -42,6 +44,8 @@ public class EncodeUtil {
     }
 
     public static Inventory decode(byte[] bytes) {
+        if (bytes == null) return null;
+
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); BukkitObjectInputStream bois = new BukkitObjectInputStream(bis)) {
             Map<String, Object> data = (Map<String, Object>) bois.readObject();
 

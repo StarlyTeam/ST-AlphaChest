@@ -1,19 +1,17 @@
 package net.starly.alphachest.inventory.holder;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import net.starly.alphachest.AlphaChestMain;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-@AllArgsConstructor
-public class AlphaChestInventoryHolder implements InventoryHolder {
+@Data
+public class AlphaChestInventoryHolder implements InventoryHolder, Serializable {
 
-    @Getter
     private final UUID owner;
-    @Getter
     private final int slot;
 
     @Override

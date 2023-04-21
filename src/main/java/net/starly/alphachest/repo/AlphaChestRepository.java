@@ -7,11 +7,10 @@ import java.io.File;
 import java.util.UUID;
 
 public interface AlphaChestRepository {
-    void initializing(File playersFolder);
+    @Deprecated
+    void initialize(File playersFolder);
 
     AlphaChest getPlayerAlphaChest(UUID uniqueId);
-
-    AlphaChest getPlayerAlphaChest(OfflinePlayer offlinePlayer);
 
     void registerPlayerAlphaChest(UUID uniqueId, AlphaChest alphaChest);
 
