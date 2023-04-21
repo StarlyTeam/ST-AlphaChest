@@ -1,25 +1,23 @@
-package net.starly.alphachest.data.holder;
+package net.starly.alphachest.inventory.holder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.starly.alphachest.enums.AlphaChestType;
+import net.starly.alphachest.AlphaChestMain;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 @AllArgsConstructor
-public class AlphaChestInventoryDataHolder implements InventoryHolder, Serializable {
+public class AlphaChestInventoryHolder implements InventoryHolder {
 
     @Getter
     private final UUID owner;
     @Getter
-    private final AlphaChestType type;
-
+    private final int slot;
 
     @Override
     public Inventory getInventory() {
-        return null;
+        return AlphaChestMain.getAlphaChestRepository().getPlayerAlphaChest(owner).getSlotInventory(slot);
     }
 }

@@ -1,11 +1,21 @@
 package net.starly.alphachest;
 
-import net.starly.alphachest.command.AlphaChestCmd;
-import net.starly.alphachest.listener.InventoryListener;
+import net.starly.alphachest.alphachest.AlphaChest;
+import net.starly.alphachest.alphachest.impl.AlphaChestImpl;
+import net.starly.alphachest.repo.AlphaChestRepository;
+import net.starly.alphachest.repo.impl.AlphaChestRepositoryImpl;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.rmi.AlreadyBoundException;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class AlphaChestMain extends JavaPlugin {
 
@@ -13,6 +23,13 @@ public class AlphaChestMain extends JavaPlugin {
     public static AlphaChestMain getInstance() {
         return instance;
     }
+
+    private static AlphaChestRepository alphaChestRepository;
+    public static AlphaChestRepository getAlphaChestRepository() {
+        return alphaChestRepository;
+    }
+
+    public final static int MAX_SLOT = 5;
 
 
     @Override
@@ -29,19 +46,26 @@ public class AlphaChestMain extends JavaPlugin {
         /* SETUP
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
         instance = this;
+        alphaChestRepository = new AlphaChestRepositoryImpl();
 //        new Metrics(this, 12345); // TODO: 수정
 
         /* CONFIG
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        if (!new File(getDataFolder(), "data/").exists()) saveResource("data/", true);
+        if (!new File(getDataFolder(), "players/").exists()) saveResource("players/", true);
+        alphaChestRepository.initializing(new File(getDataFolder(), "players/"));
 
         /* COMMAND
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        getServer().getPluginCommand("가상창고").setExecutor(new AlphaChestCmd());
+//        getServer().getPluginCommand("가상창고").setExecutor(new AlphaChestCmd());
 
         /* LISTENER
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        getServer().getPluginManager().registerEvents(new InventoryListener(), instance);
+//        getServer().getPluginManager().registerEvents(new InventoryListener(), instance);
+    }
+
+    @Override
+    public void onDisable() {
+        alphaChestRepository.saveAll();
     }
 
     private boolean isPluginEnabled(String name) {
