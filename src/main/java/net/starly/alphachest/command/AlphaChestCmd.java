@@ -1,6 +1,7 @@
 package net.starly.alphachest.command;
 
 import net.starly.alphachest.AlphaChestMain;
+import net.starly.alphachest.alphachest.AlphaChest;
 import net.starly.alphachest.context.MessageContext;
 import net.starly.alphachest.enums.MessageType;
 import net.starly.alphachest.inventory.GUIUtil;
@@ -11,6 +12,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 import static net.starly.alphachest.AlphaChestMain.MAX_SLOT;
 
@@ -103,7 +106,7 @@ public class AlphaChestCmd implements CommandExecutor {
                     }
 
                     case "뺏기": {
-                        alphaChestRepository.getPlayerAlphaChest(target.getUniqueId()).getSlotInventory(slot).getViewers().forEach(HumanEntity::closeInventory);
+                        if (alphaChestRepository.isUsable(target.getUniqueId(), slot)) new ArrayList<>(alphaChestRepository.getPlayerAlphaChest(target.getUniqueId()).getSlotInventory(slot).getViewers()).forEach(HumanEntity::closeInventory);
                         alphaChestRepository.setUsable(target.getUniqueId(), slot, false);
                         sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.NORMAL, "permissionTake"));
                         return true;

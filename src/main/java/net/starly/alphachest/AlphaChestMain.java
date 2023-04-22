@@ -6,7 +6,6 @@ import net.starly.alphachest.context.MessageContext;
 import net.starly.alphachest.listener.InventoryListener;
 import net.starly.alphachest.repo.AlphaChestRepository;
 import net.starly.alphachest.repo.impl.AlphaChestRepositoryImpl;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 

@@ -1,6 +1,8 @@
 package net.starly.alphachest.listener;
 
 import net.starly.alphachest.AlphaChestMain;
+import net.starly.alphachest.context.MessageContext;
+import net.starly.alphachest.enums.MessageType;
 import net.starly.alphachest.inventory.holder.AlphaChestInventoryHolder;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -37,7 +39,7 @@ public class InventoryListener implements Listener {
             int slot = event.getSlot() - 10;
             if (!(slot > 0 && slot <= MAX_SLOT)) return;
             if (!AlphaChestMain.getAlphaChestRepository().isUsable(holder.getOwner(), slot)) {
-                player.sendMessage("해당 슬롯은 사용할 수 없습니다.");
+                player.sendMessage(MessageContext.getInstance().getMessageAfterPrefix(MessageType.ERROR, "notUsableSlot"));
                 return;
             }
 
@@ -45,7 +47,6 @@ public class InventoryListener implements Listener {
         } else {
             // ALPHA-CHEST SLOT INVENTORY
             player.getOpenInventory().getTopInventory().getViewers().stream().map(entity -> (Player) entity).filter(player_ -> player_ != player).forEach(Player::updateInventory);
-            AlphaChestMain.getAlphaChestRepository().saveAll();
         }
     }
 }

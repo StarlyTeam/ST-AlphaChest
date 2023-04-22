@@ -6,18 +6,15 @@ import net.starly.alphachest.alphachest.impl.AlphaChestImpl;
 import net.starly.alphachest.inventory.holder.AlphaChestInventoryHolder;
 import net.starly.alphachest.repo.AlphaChestRepository;
 import net.starly.alphachest.util.EncodeUtil;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 
-import javax.xml.bind.SchemaOutputResolver;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static net.starly.alphachest.AlphaChestMain.MAX_SLOT;
@@ -29,6 +26,7 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
 
     @Override
+    @Deprecated
     public void initialize(File playersFolder) {
         this.alphaChestMap.clear();
         this.playersFolder = playersFolder;
@@ -38,13 +36,13 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
             for (File playerFile : playersFolder.listFiles()) {
                 FileConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
+                UUID uniqueId = UUID.fromString(playerFile.getName().replace(".yml", ""));
+                if (!alphaChestMap.containsKey(uniqueId)) alphaChestMap.put(uniqueId, new AlphaChestImpl());
+
                 playerConfig.getKeys(false).forEach(slotStr -> {
                     int slot = Integer.parseInt(slotStr);
-                    UUID uniqueId = UUID.fromString(playerFile.getName().replace(".yml", ""));
-
                     ConfigurationSection section = playerConfig.getConfigurationSection(slotStr);
 
-                    alphaChestMap.put(uniqueId, new AlphaChestImpl());
                     setUsable(uniqueId, slot, section.getBoolean("usable"));
                     getPlayerAlphaChest(uniqueId).setSlotInventory(slot, EncodeUtil.decode((byte[]) section.get("inventory")));
                 });
@@ -54,13 +52,8 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
     @Override
     public AlphaChest getPlayerAlphaChest(UUID uniqueId) {
-        if (!alphaChestMap.containsKey(uniqueId)) registerPlayerAlphaChest(uniqueId, new AlphaChestImpl());
+        if (!alphaChestMap.containsKey(uniqueId)) alphaChestMap.put(uniqueId, new AlphaChestImpl());
         return alphaChestMap.get(uniqueId);
-    }
-
-    @Override
-    public void registerPlayerAlphaChest(UUID uniqueId, AlphaChest alphaChest) {
-        alphaChestMap.put(uniqueId, alphaChest);
     }
 
     @Override

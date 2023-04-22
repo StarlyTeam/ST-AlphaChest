@@ -12,7 +12,6 @@ public interface AlphaChestRepository {
 
     AlphaChest getPlayerAlphaChest(UUID uniqueId);
 
-    void registerPlayerAlphaChest(UUID uniqueId, AlphaChest alphaChest);
 
     void setUsable(UUID uniqueId, int slot, boolean usable);
 
