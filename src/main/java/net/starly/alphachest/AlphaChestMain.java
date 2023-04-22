@@ -6,6 +6,7 @@ import net.starly.alphachest.context.MessageContext;
 import net.starly.alphachest.listener.InventoryListener;
 import net.starly.alphachest.repo.AlphaChestRepository;
 import net.starly.alphachest.repo.impl.AlphaChestRepositoryImpl;
+import net.starly.core.bstats.Metrics;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -41,12 +42,12 @@ public class AlphaChestMain extends JavaPlugin {
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
         instance = this;
         alphaChestRepository = new AlphaChestRepositoryImpl();
-//        new Metrics(this, 12345); // TODO: 수정
+        new Metrics(this, 18261);
 
         /* CONFIG
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
-        if (!new File(getDataFolder(), "players/").exists()) saveResource("players/", true);
-        if (!new File(getDataFolder(), "config.yml").exists()) saveResource("config.yml", true);
+        if (!new File(getDataFolder(), "players/").exists()) new File(getDataFolder(), "players/").mkdirs();
+        if (!new File(getDataFolder(), "config.yml").exists()) saveDefaultConfig();
         alphaChestRepository.initialize(new File(getDataFolder(), "players/"));
         MessageContext.getInstance().$loadConfig(getConfig());
 
