@@ -22,12 +22,14 @@ public class AlphaChestTab implements TabCompleter {
         } else if (args.length == 2) {
             if (args[0].equals("열기")) return null;
             else if (args[0].equals("권한")) {
+                completions.add("<액션>");
                 if (sender.hasPermission("starly.alphachest.per.give")) completions.add("지급");
                 if (sender.hasPermission("starly.alphachest.per.take")) completions.add("뺏기");
             }
         } else if (args.length == 3) {
             if (args[0].equals("권한")) return null;
         } else if (args.length == 4) {
+            completions.add("<슬롯>");
             if (args[0].equals("권한")) {
                 for (int i = 1; i <= MAX_SLOT; i++) completions.add(String.valueOf(i));
             }

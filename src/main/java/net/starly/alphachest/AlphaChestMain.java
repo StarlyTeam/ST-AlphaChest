@@ -2,9 +2,11 @@ package net.starly.alphachest;
 
 import net.starly.alphachest.command.AlphaChestCmd;
 import net.starly.alphachest.command.tabcomplete.AlphaChestTab;
+import net.starly.alphachest.context.MessageContext;
 import net.starly.alphachest.listener.InventoryListener;
 import net.starly.alphachest.repo.AlphaChestRepository;
 import net.starly.alphachest.repo.impl.AlphaChestRepositoryImpl;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -45,7 +47,9 @@ public class AlphaChestMain extends JavaPlugin {
         /* CONFIG
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */
         if (!new File(getDataFolder(), "players/").exists()) saveResource("players/", true);
+        if (!new File(getDataFolder(), "config.yml").exists()) saveResource("config.yml", true);
         alphaChestRepository.initialize(new File(getDataFolder(), "players/"));
+        MessageContext.getInstance().$loadConfig(getConfig());
 
         /* COMMAND
          ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── */

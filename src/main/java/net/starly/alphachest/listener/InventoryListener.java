@@ -2,6 +2,7 @@ package net.starly.alphachest.listener;
 
 import net.starly.alphachest.AlphaChestMain;
 import net.starly.alphachest.inventory.holder.AlphaChestInventoryHolder;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

@@ -1,6 +1,8 @@
 package net.starly.alphachest.command;
 
 import net.starly.alphachest.AlphaChestMain;
+import net.starly.alphachest.context.MessageContext;
+import net.starly.alphachest.enums.MessageType;
 import net.starly.alphachest.inventory.GUIUtil;
 import net.starly.alphachest.repo.AlphaChestRepository;
 import org.bukkit.OfflinePlayer;
@@ -16,53 +18,65 @@ public class AlphaChestCmd implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
-        Player player = (Player) sender;
+
+        MessageContext messageContext = MessageContext.getInstance();
+
 
         if (args.length == 0) {
-            // OPEN HUB
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noConsoleCommand"));
+                return true;
+            }
+            Player player = (Player) sender;
+
             player.openInventory(GUIUtil.getHubGUI(player.getUniqueId()));
             return true;
         }
 
         switch (args[0]) {
             case "열기": {
+                if (!(sender instanceof Player)) {
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noConsoleCommand"));
+                    return true;
+                }
+                Player player = (Player) sender;
+
                 if (args.length == 1) {
-                    player.sendMessage("자신의 가상창고를 확인하려면 [/가상창고]를 사용해주세요.");
+                    player.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPlayerName"));
                     return true;
                 } else if (args.length == 2) {
                     OfflinePlayer target = AlphaChestMain.getInstance().getServer().getOfflinePlayer(args[1]);
                     if (!(target.isOnline() || target.hasPlayedBefore())) {
-                        player.sendMessage("입력하신 플레이어는 존재하지 않습니다.");
+                        player.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "playerNotFound"));
                         return true;
                     }
 
                     player.openInventory(GUIUtil.getHubGUI(target.getUniqueId()));
                     return true;
                 } else {
-                    player.sendMessage("잘못된 명령어입니다.");
+                    player.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongCommand"));
                     return true;
                 }
             }
 
             case "권한": {
                 if (args.length == 1) {
-                    player.sendMessage("관리 액션을 입력해주세요.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noManageAction"));
                     return true;
                 } else if (args.length == 2) {
-                    player.sendMessage("권한을 지급할 플레이어를 입력해주세요.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPlayerName"));
                     return true;
                 } else if (args.length == 3) {
-                    player.sendMessage("권한을 지급할 슬롯을 입력해주세요.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noSlot"));
                     return true;
                 } else if (args.length != 4) {
-                    player.sendMessage("잘못된 명령어입니다.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongCommand"));
                     return true;
                 }
 
                 OfflinePlayer target = AlphaChestMain.getInstance().getServer().getOfflinePlayer(args[2]);
                 if (!(target.isOnline() || target.hasPlayedBefore())) {
-                    player.sendMessage("입력하신 플레이어는 존재하지 않습니다.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "playerNotFound"));
                     return true;
                 }
 
@@ -70,11 +84,11 @@ public class AlphaChestCmd implements CommandExecutor {
                 try {
                     slot = Integer.parseInt(args[3]);
                 } catch (NumberFormatException ignored) {
-                    player.sendMessage("슬롯이 잘못되었습니다.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongSlot"));
                     return true;
                 }
                 if (!(slot > 0 && slot <= MAX_SLOT)) {
-                    player.sendMessage("슬롯이 잘못되었습니다.");
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongSlot"));
                     return true;
                 }
 
@@ -84,26 +98,26 @@ public class AlphaChestCmd implements CommandExecutor {
                 switch (args[1]) {
                     case "지급": {
                         AlphaChestMain.getAlphaChestRepository().setUsable(target.getUniqueId(), slot, true);
-                        player.sendMessage("성공적으로 권한을 지급했습니다.");
+                        sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.NORMAL, "permissionGive"));
                         return true;
                     }
 
                     case "뺏기": {
                         alphaChestRepository.getPlayerAlphaChest(target.getUniqueId()).getSlotInventory(slot).getViewers().forEach(HumanEntity::closeInventory);
                         alphaChestRepository.setUsable(target.getUniqueId(), slot, false);
-                        player.sendMessage("성공적으로 권한을 뺏었습니다.");
+                        sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.NORMAL, "permissionTake"));
                         return true;
                     }
 
                     default: {
-                        player.sendMessage("잘못된 명령어입니다.");
+                        sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongCommand"));
                         return true;
                     }
                 }
             }
 
             default: {
-                player.sendMessage("잘못된 명령어입니다.");
+                sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "wrongCommand"));
                 return true;
             }
         }
