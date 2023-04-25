@@ -1,7 +1,6 @@
 package net.starly.alphachest.command;
 
 import net.starly.alphachest.AlphaChestMain;
-import net.starly.alphachest.alphachest.AlphaChest;
 import net.starly.alphachest.context.MessageContext;
 import net.starly.alphachest.enums.MessageType;
 import net.starly.alphachest.inventory.GUIUtil;
@@ -29,6 +28,9 @@ public class AlphaChestCmd implements CommandExecutor {
             if (!(sender instanceof Player)) {
                 sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noConsoleCommand"));
                 return true;
+            } else if (!sender.hasPermission("starly.alphachest.open.self")) {
+                sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPermission"));
+                return true;
             }
             Player player = (Player) sender;
 
@@ -40,6 +42,9 @@ public class AlphaChestCmd implements CommandExecutor {
             case "열기": {
                 if (!(sender instanceof Player)) {
                     sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noConsoleCommand"));
+                    return true;
+                } else if (!sender.hasPermission("starly.alphachest.open.others")) {
+                    sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPermission"));
                     return true;
                 }
                 Player player = (Player) sender;
@@ -100,12 +105,22 @@ public class AlphaChestCmd implements CommandExecutor {
 
                 switch (args[1]) {
                     case "지급": {
+                        if (!sender.hasPermission("starly.alphachest.permission.give")) {
+                            sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPermission"));
+                            return true;
+                        }
+
                         AlphaChestMain.getAlphaChestRepository().setUsable(target.getUniqueId(), slot, true);
                         sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.NORMAL, "permissionGive"));
                         return true;
                     }
 
                     case "뺏기": {
+                        if (!sender.hasPermission("starly.alphachest.permission.take")) {
+                            sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.ERROR, "noPermission"));
+                            return true;
+                        }
+
                         if (alphaChestRepository.isUsable(target.getUniqueId(), slot)) new ArrayList<>(alphaChestRepository.getPlayerAlphaChest(target.getUniqueId()).getSlotInventory(slot).getViewers()).forEach(HumanEntity::closeInventory);
                         alphaChestRepository.setUsable(target.getUniqueId(), slot, false);
                         sender.sendMessage(messageContext.getMessageAfterPrefix(MessageType.NORMAL, "permissionTake"));
