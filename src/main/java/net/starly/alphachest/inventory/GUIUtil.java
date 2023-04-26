@@ -6,6 +6,7 @@ import net.starly.core.builder.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 
@@ -15,18 +16,18 @@ public class GUIUtil {
         Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(new AlphaChestInventoryHolder(owner, 0), 27, "가상창고 [허브]");
 
         {
-            Material emptyType;
+            ItemStack emptySlotStack;
             try {
-                emptyType = Material.valueOf("BLACK_STAINED_GLASS_PANE");
-            } catch (NoSuchFieldError ignored) {
-                emptyType = Material.valueOf("STAINED_GLASS_PANE");
+                emptySlotStack = new ItemStack(Material.valueOf("BLACK_STAINED_GLASS_PANE"));
+            } catch (IllegalArgumentException ignored) {
+                emptySlotStack = new ItemStack(Material.valueOf("STAINED_GLASS_PANE"), (short) 0, (byte) 13);
             }
 
-            ItemStack emptySlot = new ItemBuilder(emptyType)
-                    .setDisplayName("§r")
-                    .build();
-            for (int i = 0; i <= 9; i++) inventory.setItem(i, emptySlot);
-            for (int i = 17; i <= 26; i++) inventory.setItem(i, emptySlot);
+            ItemMeta emptyStackMeta = emptySlotStack.getItemMeta();
+            emptyStackMeta.setDisplayName("§r");
+            emptySlotStack.setItemMeta(emptyStackMeta);
+            for (int i = 0; i <= 9; i++) inventory.setItem(i, emptySlotStack);
+            for (int i = 17; i <= 26; i++) inventory.setItem(i, emptySlotStack);
         }
         {
             ItemBuilder itemBuilder = new ItemBuilder(Material.CHEST);
