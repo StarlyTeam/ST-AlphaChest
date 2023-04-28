@@ -43,8 +43,8 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
                     int slot = Integer.parseInt(slotStr);
                     ConfigurationSection section = playerConfig.getConfigurationSection(slotStr);
 
-                    setUsable(uniqueId, slot, section.getBoolean("usable"));
                     getPlayerAlphaChest(uniqueId).setSlotInventory(slot, EncodeUtil.decode((byte[]) section.get("inventory")));
+                    setUsable(uniqueId, slot, section.getBoolean("usable"));
                 });
             }
         }
