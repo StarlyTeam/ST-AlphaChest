@@ -63,7 +63,7 @@ public class AlphaChestMain extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        alphaChestRepository.saveAll();
+        if (alphaChestRepository != null) alphaChestRepository.saveAll();
     }
 
     private boolean isPluginEnabled(String name) {
