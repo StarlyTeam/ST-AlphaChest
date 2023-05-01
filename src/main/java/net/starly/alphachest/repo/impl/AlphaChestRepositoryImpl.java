@@ -62,7 +62,7 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
         if (!usable) {
             alphaChest.setSlotInventory(slot, null);
-        } else {
+        } else if (alphaChest.getSlotInventory(slot) == null) {
             Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(new AlphaChestInventoryHolder(uniqueId, slot), 54, "가상창고 [" + slot + "번]");
             alphaChest.setSlotInventory(slot, inventory);
         }
