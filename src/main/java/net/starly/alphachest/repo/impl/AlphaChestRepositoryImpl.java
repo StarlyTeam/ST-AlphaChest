@@ -85,7 +85,7 @@ public class AlphaChestRepositoryImpl implements AlphaChestRepository {
 
             for (int slot = 1; slot <= MAX_SLOT; slot++) {
                 ConfigurationSection section = config.createSection(String.valueOf(slot));
-                section.set("inventory", EncodeUtil.encode(alphaChest.getSlotInventory(slot)));
+                section.set("inventory", EncodeUtil.encode(slot, alphaChest.getSlotInventory(slot)));
                 section.set("usable", isUsable(uniqueId, slot));
             }
 

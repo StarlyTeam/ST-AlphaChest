@@ -15,20 +15,14 @@ import java.util.Map;
 
 public class EncodeUtil {
 
-    public static byte[] encode(Inventory inventory) {
+    public static byte[] encode(int slot, Inventory inventory) {
         if (inventory == null) return null;
 
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); BukkitObjectOutputStream boos = new BukkitObjectOutputStream(bos)) {
             Map<String, Object> result = new HashMap<>();
 
 
-            Object titleComponent = inventory.getClass().getDeclaredMethod("title").invoke(inventory);
-            Field titleContentField = titleComponent.getClass().getDeclaredField("content");
-            titleContentField.setAccessible(true);
-            String title = (String) titleContentField.get(titleComponent);
-            titleContentField.setAccessible(false);
-
-            result.put("title", title);
+            result.put("slot", slot);
             result.put("size", inventory.getSize());
             result.put("holder", inventory.getHolder());
             result.put("contents", inventory.getContents());
@@ -50,13 +44,13 @@ public class EncodeUtil {
             Map<String, Object> data = (Map<String, Object>) bois.readObject();
 
 
-            String title = (String) data.get("title");
+            int slot = (int) data.get("slot");
             int size = (int) data.get("size");
             InventoryHolder holder = (InventoryHolder) data.get("holder");
-            ItemStack[] contents = (ItemStack[])data.get("contents");
+            ItemStack[] contents = (ItemStack[]) data.get("contents");
 
 
-            Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(holder, size, title);
+            Inventory inventory = AlphaChestMain.getInstance().getServer().createInventory(holder, size, "가상창고 [" + slot + "]");
             inventory.setContents(contents);
 
             return inventory;
